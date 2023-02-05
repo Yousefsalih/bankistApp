@@ -76,3 +76,32 @@ const displayMovements = function(movements) {
 
 displayMovements(account1.movements); //call the function
 
+//Adding a username for all the accounts based on the initials of the owner name:
+const createUsernames = function (accs) { //Array of accounts
+  //Side effect: Change/mutate original array
+  accs.forEach(function(acc) { //Each account object in the accounts array
+    acc.username = acc.owner //Create a username property with a value that provides initials of the owner name and transforms it to the following:
+      .toLowerCase()
+      .split(' ')
+      .map(function (name) {
+        return name[0];
+      })
+      .join('');
+  });
+};
+createUsernames(accounts); //Call the function using the accounts array as the argument
+console.log(accounts); //Updates are made
+
+//Testing 1 user
+// const createUsernames = function (user) {
+
+// //Create a function to transform a name to initials for the username login
+// const username = user.toLowerCase().split(' ').map(function(name){
+//   return name[0];//Array(3) [ "s", "t", "w" ]
+// }).join('');
+//   return username
+// };
+// console.log(createUsernames('Steven Thomas Williams')); //stw
+
+//To modify over an array, we use a forEach().
+
