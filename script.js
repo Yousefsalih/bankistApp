@@ -76,7 +76,16 @@ const displayMovements = function(movements) {
 
 displayMovements(account1.movements); //call the function
 
-//Adding a username for all the accounts based on the initials of the owner name:
+//Display final balance
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance} EUR`;
+  console.log(balance); //3840 for the first account
+};
+
+calcDisplayBalance(account1.movements)
+
+//Adding a username property for all the accounts based on the initials of the owner name:
 const createUsernames = function (accs) { //Array of accounts
   //Side effect: Change/mutate original array
   accs.forEach(function(acc) { //Each account object in the accounts array
@@ -104,4 +113,3 @@ console.log(accounts); //Updates are made
 // console.log(createUsernames('Steven Thomas Williams')); //stw
 
 //To modify over an array, we use a forEach().
-
