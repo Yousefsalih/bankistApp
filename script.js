@@ -76,7 +76,8 @@ const displayMovements = function(movements) {
   })
 }
 
-displayMovements(account1.movements); //call the function
+// displayMovements(account1.movements);
+
 
 //Display final balance
 const calcDisplayBalance = function (movements) {
@@ -85,22 +86,22 @@ const calcDisplayBalance = function (movements) {
   console.log(balance); //3840 for the first account
 };
 
-calcDisplayBalance(account1.movements)
+// calcDisplayBalance(account1.movements)
 
 //Display the summary of the totals
-const calcDepositSummary = function(movements) {
+const calcDisplaySummary = function(acc) {
   //Display the income
-  const incomes = movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
+  const incomes = acc.movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${incomes}€`
 
 //Display the withdrawal amount
-const withdrawal = movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
+const withdrawal = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(withdrawal)}€`;
 
 //Display the interest total
-const interest = movements
+const interest = acc.movements
 .filter(mov => mov > 0)
-.map(deposit => (deposit * 1.2) / 100).filter((int, i, arr) => {
+.map(deposit => (deposit * acc.interestRate) / 100).filter((int, i, arr) => {
   console.log(arr);
   return int >= 1;
 })
@@ -108,7 +109,7 @@ const interest = movements
 labelSumInterest.textContent = `${interest}€`;
 }
 
-calcDepositSummary(account1.movements);
+// calcDisplaySummary(account1.movements);
 
 //Adding a username property for all the accounts based on the initials of the owner name:
 const createUsernames = function (accs) { //Array of accounts
@@ -138,3 +139,37 @@ console.log(accounts); //Updates are made
 // console.log(createUsernames('Steven Thomas Williams')); //stw
 
 //To modify over an array, we use a forEach().
+
+const account = accounts.find(acc => acc.owner === 'Jessica Davis');
+console.log(account); //returns account2 object
+
+//Event handler for login
+let currentAccount;
+
+btnLogin.addEventListener('click', function (e) { //Enter button works in the form input as a click too
+  e.preventDefault(); //prevent form from submitting because it refreshes the page
+  console.log('LOGIN');
+
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
+  console.log(currentAccount);//shows the account object
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display UI and Welcome Message
+    labelWelcome.textContent = `Welcome back. ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+
+    containerApp.style.opacity = 100;
+
+    //Clear Input fields
+    inputLoginUsername.value = inputLoginPin.value = ''
+    inputLoginPin.blur(); //Loses focus
+
+    //Display movements
+    displayMovements(currentAccount.movements);
+    //Display balance
+    calcDisplayBalance(currentAccount.movements);
+    //Display Summary
+    calcDisplaySummary(currentAccount);
+    console.log('LOGIN');
+  }
+})
