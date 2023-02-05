@@ -1,5 +1,6 @@
 'use strict';
 
+//Different user accounts. For refactoring, we can add the date, description of the movement, and time. Using objects instead of maps to resemble a web API.
 const account1 = {
   owner: 'Jonas Schmedtmann',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
@@ -28,7 +29,7 @@ const account4 = {
   pin: 4444,
 };
 
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2, account3, account4]; //Holding accounts array
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -56,12 +57,22 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-//Practice lessons with App
+//Show the transactions
+const displayMovements = function(movements) {
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
+  containerMovements.innerHTML = ''; //removes values
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+  movements.forEach(function (mov, i){
+    const type = mov > 0 ? 'deposit' : 'withdrawal'
+    const html = `
+          <div class="movements__row">
+          <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+          <div class="movements__value">${mov}</div>
+        </div>
+    `;
+    containerMovements.insertAdjacentHTML('afterbegin', html) //4 different types of inputs (afterbegin, before end, etc.) The order of element matters to choose the right one//html is the variable above
+  })
+}
+
+displayMovements(account1.movements); //call the function
+

@@ -1,0 +1,1 @@
+A simple bank application that keeps track of money deposits and withdrawals. It has a login page, transfer money feature, request loan feature, close the account option and a dashboard with all of the previous transactions made. It also has an automatic log out feature timer.
