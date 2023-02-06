@@ -231,3 +231,19 @@ btnLoan.addEventListener('click', function (e) {
 
 })
 
+//Testing out the flat method in order for the bank to calculate the total balance of all of the movements (transactions) in the bank
+const accountMovements = accounts.map(acc => acc.movements);
+console.log(accountMovements); //Creates 1 array of 4 nested arrays
+const allMovements = accountMovements.flat(); //Combines all arrays into one array
+console.log(allMovements);
+const overallBalance = allMovements.reduce((acc, mov) => acc + mov, 0); //Sums up the total values
+console.log(overallBalance);//17840
+
+//Same as above but using chaining methods
+const overallBalance2 = accounts.map(acc => acc.movements).flat().reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance2);
+
+//Using flatMap: Combines both map and flat methods. It is better for performance. Flat map can only go one level deep, therefore, if you need to go deeper, use the flat method.
+
+const overallBalance3 = accounts.flatMap(acc => acc.movements).reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance3);
