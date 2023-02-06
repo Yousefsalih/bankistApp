@@ -202,4 +202,17 @@ btnTransfer.addEventListener('click', function(e) {
     }
 })
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+//Close Account Function
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  if (inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin) {
+    const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+    console.log(index); //0 (Jonas object)
+    accounts.splice(index, 1) ///Delete Account
+    //Hide UI
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = ''
+
+
+})
