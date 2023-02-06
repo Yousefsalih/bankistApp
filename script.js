@@ -80,10 +80,10 @@ const displayMovements = function(movements) {
 
 
 //Display final balance
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance}€`;
-  console.log(balance); //3840 for the first account
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
+  // console.log(balance); //3840 for the first account
 };
 
 // calcDisplayBalance(account1.movements)
@@ -140,8 +140,19 @@ console.log(accounts); //Updates are made
 
 //To modify over an array, we use a forEach().
 
-const account = accounts.find(acc => acc.owner === 'Jessica Davis');
-console.log(account); //returns account2 object
+//Example using the find method
+// const account = accounts.find(acc => acc.owner === 'Jessica Davis');
+// console.log(account); //returns account2 object
+
+const updateUI = function (acc) {
+  //Display movements
+  displayMovements(acc.movements);
+  //Display balance
+  calcDisplayBalance(acc);
+  //Display Summary
+  calcDisplaySummary(acc);
+  // console.log('LOGIN');
+};
 
 //Event handler for login
 let currentAccount;
@@ -164,12 +175,31 @@ btnLogin.addEventListener('click', function (e) { //Enter button works in the fo
     inputLoginUsername.value = inputLoginPin.value = ''
     inputLoginPin.blur(); //Loses focus
 
-    //Display movements
-    displayMovements(currentAccount.movements);
-    //Display balance
-    calcDisplayBalance(currentAccount.movements);
-    //Display Summary
-    calcDisplaySummary(currentAccount);
-    console.log('LOGIN');
+    //Update UI
+    updateUI(currentAccount);
   }
 })
+
+//Transfer Money
+btnTransfer.addEventListener('click', function(e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
+  // console.log(amount, receiverAcc);
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+  if(amount > 0 && 
+    receiverAcc && //Same as line 187 to ask if the account exists or not
+    currentAccount.balance >= amount && 
+    receiverAcc?.username !== currentAccount.username) {
+      // console.log('Transfer Valid');
+      //Doing the transfer
+      currentAccount.movements.push(-amount);
+      receiverAcc.movements.push(amount);
+
+      //Update UI
+      updateUI(currentAccount);
+    }
+})
+
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
