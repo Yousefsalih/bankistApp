@@ -102,7 +102,7 @@ const withdrawal = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc
 const interest = acc.movements
 .filter(mov => mov > 0)
 .map(deposit => (deposit * acc.interestRate) / 100).filter((int, i, arr) => {
-  console.log(arr);
+  // console.log(arr);
   return int >= 1;
 })
 .reduce((acc, int) => acc + int, 0);
@@ -125,7 +125,7 @@ const createUsernames = function (accs) { //Array of accounts
   });
 };
 createUsernames(accounts); //Call the function using the accounts array as the argument
-console.log(accounts); //Updates are made
+// console.log(accounts); //Updates are made
 
 //Testing 1 user
 // const createUsernames = function (user) {
@@ -213,6 +213,21 @@ btnClose.addEventListener('click', function (e) {
     containerApp.style.opacity = 0;
   }
   inputCloseUsername.value = inputClosePin.value = ''
+})
 
+//Request Loan Function
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+//Using the .some method: Sets a condition where any of the values are true
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
+    //Add movement
+    currentAccount.movements.push(amount);
+
+    //Update UI
+    updateUI(currentAccount)
+  }
+  inputLoanAmount.value = '';
 
 })
+
