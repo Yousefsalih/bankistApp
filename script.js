@@ -259,3 +259,14 @@ btnSort.addEventListener('click', function(e) {
   displayMovements(currentAccount.movements, !sorted);
   sorted = !sorted;
 })
+
+//.from() method in practice: Takes all the movements, puts it into an array and replaces the euro sign as well
+// labelBalance.addEventListener('click', function () {
+//   const movementsUI = Array.from(
+//     document.querySelectorAll('.movements__value'),
+//     el => Number(el.textContent.replace('€', ''))
+//   )
+//   console.log(movementsUI)
+//Alternatively
+//   const movementsUI2 = [...document.querySelectorAll('.movements__value')];
+// })
