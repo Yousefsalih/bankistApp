@@ -270,3 +270,39 @@ btnSort.addEventListener('click', function(e) {
 //Alternatively
 //   const movementsUI2 = [...document.querySelectorAll('.movements__value')];
 // })
+
+//Exercise #1: Calculate total deposits
+// const bankDepositSum = accounts.map(acc => acc.movements).flat();//Same as below
+const bankDepositSum = accounts.flatMap(acc => acc.movements).filter(mov => mov > 0).reduce((sum, cur) => sum + cur, 0)
+console.log(bankDepositSum);
+
+//Exercise #2: Number of deposits that are at least 1000 euros
+
+// const numDeposits1000 = accounts.flatMap(acc => acc.movements).filter(mov => mov >= 1000).length
+//Alternative way using reduce
+const numDeposits1000 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((count , cur) => cur >= 1000 ? count + 1 : count, 0) //Alternative to count + 1 is ++count. The ++ prefixed operator works.
+
+console.log(numDeposits1000);//6 deposits
+
+let a = 10;
+console.log(a++);//Still returns 10
+console.log(a);//11
+
+//Exercise #3: Calculate the sum of the deposits and withdrawals using the reduce method
+const sums = accounts.flatMap(acc => acc.movements).reduce((sums, cur) => {
+  cur > 0 ? sums.deposits += cur : sums.withdrawals += cur;
+  return sums;
+}, {deposits: 0, withdrawals: 0})
+
+console.log(sums); //Object { deposits: 25180, withdrawals: -7340 }
+
+const {deposits, withdrawals} = accounts.flatMap(acc => acc.movements).reduce((sums, cur) => {
+  // cur > 0 ? sums.deposits += cur : sums.withdrawals += cur;
+  sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur;// same as above
+  return sums;
+}, {deposits: 0, withdrawals: 0})
+
+console.log(deposits, withdrawals); //25180 -7340
+
