@@ -72,7 +72,7 @@ const displayMovements = function(movements, sort = false) {
           <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-          <div class="movements__value">${mov}€</div>
+          <div class="movements__value">${mov.toFixed(2)}€</div>
         </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html) //4 different types of inputs (afterbegin, before end, etc.) The order of element matters to choose the right one//html is the variable above
@@ -85,7 +85,7 @@ const displayMovements = function(movements, sort = false) {
 //Display final balance
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
   // console.log(balance); //3840 for the first account
 };
 
@@ -95,11 +95,11 @@ const calcDisplayBalance = function (acc) {
 const calcDisplaySummary = function(acc) {
   //Display the income
   const incomes = acc.movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
 //Display the withdrawal amount
 const withdrawal = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(withdrawal)}€`;
+  labelSumOut.textContent = `${Math.abs(withdrawal).toFixed(2)}€`;
 
 //Display the interest total
 const interest = acc.movements
@@ -109,7 +109,7 @@ const interest = acc.movements
   return int >= 1;
 })
 .reduce((acc, int) => acc + int, 0);
-labelSumInterest.textContent = `${interest}€`;
+labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 }
 
 // calcDisplaySummary(account1.movements);
@@ -166,7 +166,7 @@ btnLogin.addEventListener('click', function (e) { //Enter button works in the fo
 
   currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
   console.log(currentAccount);//shows the account object
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +(inputLoginPin.value)) {
     //Display UI and Welcome Message
     labelWelcome.textContent = `Welcome back. ${
       currentAccount.owner.split(' ')[0]
@@ -186,7 +186,7 @@ btnLogin.addEventListener('click', function (e) { //Enter button works in the fo
 //Transfer Money
 btnTransfer.addEventListener('click', function(e) {
   e.preventDefault();
-  const amount = Number(inputTransferAmount.value);
+  const amount = +(inputTransferAmount.value);
   const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
   // console.log(amount, receiverAcc);
   inputTransferAmount.value = inputTransferTo.value = '';
@@ -208,7 +208,7 @@ btnTransfer.addEventListener('click', function(e) {
 //Close Account Function
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
-  if (inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin) {
+  if (inputCloseUsername.value === currentAccount.username && +(inputClosePin.value) === currentAccount.pin) {
     const index = accounts.findIndex(acc => acc.username === currentAccount.username);
     console.log(index); //0 (Jonas object)
     accounts.splice(index, 1) ///Delete Account
@@ -221,7 +221,9 @@ btnClose.addEventListener('click', function (e) {
 //Request Loan Function
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value)
+  // +(inputLoanAmount.value);
+  //Number(inputLoanAmount.value)
 //Using the .some method: Sets a condition where any of the values are true
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
     //Add movement
@@ -306,3 +308,12 @@ const {deposits, withdrawals} = accounts.flatMap(acc => acc.movements).reduce((s
 
 console.log(deposits, withdrawals); //25180 -7340
 
+//Exercise: Using the remainder operator (For the Nth time feature)
+labelBalance.addEventListener('click', function(){
+  [...document.querySelectorAll('movements__row')].forEach(function (row, i) {
+    //Evens 0, 2, 4, 6
+    if (i % 2 ===0) row.style.backgroundColor = 'orangered'
+    //Odds
+    if (i % 3 === 0) row.style.backgroundColor = 'blue';
+  });
+});
