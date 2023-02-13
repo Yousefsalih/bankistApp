@@ -119,6 +119,16 @@ const formatMovementDate = function(date, locale) {
   return new Intl.DateTimeFormat(locale).format(date); //Updating it with the internationalization API
 
 }
+
+//Adding currency function based on locale
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+    }).format(value);
+}
+
+
 //Show the transactions
 const displayMovements = function(acc, sort = false) {
 
@@ -131,15 +141,26 @@ const displayMovements = function(acc, sort = false) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const date = new Date(acc.movementsDates[i]);
     const displayDate = formatMovementDate(date, acc.locale);
+    const formattedMov = formatCur(mov, acc.locale, acc.currency);//replaces the code below
+
+    // //Adding the formatted number and currency based on locale and user. 
+    // const formattedMov = new Intl.NumberFormat(acc.locale, {
+    //   //Options object
+    //   style: 'currency',
+    //   currency: acc.currency,
+    // }).format(mov);
+
     const html = `
           <div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
           <div class="movements__date">${displayDate}</div>
-          <div class="movements__value">${mov.toFixed(2)}€</div>
+          <div class="movements__value">${formattedMov}</div>
         </div>
     `;
+    // <div class="movements__value">${mov.toFixed(2)}€</div>; //This is replaced by line 147. toFixed() makes it 2 decimals places
+
     containerMovements.insertAdjacentHTML('afterbegin', html); //4 different types of inputs (afterbegin, before end, etc.) The order of element matters to choose the right one//html is the variable above
   })
 }
@@ -150,7 +171,9 @@ const displayMovements = function(acc, sort = false) {
 //Display final balance
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
+  // labelBalance.textContent = `${acc.balance.toFixed(2)}€`;//Previous code
   // console.log(balance); //3840 for the first account
 };
 
@@ -160,11 +183,14 @@ const calcDisplayBalance = function (acc) {
 const calcDisplaySummary = function(acc) {
   //Display the income
   const incomes = acc.movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
+  // labelSumIn.textContent = `${incomes.toFixed(2)}€`;//Previous code
 
 //Display the withdrawal amount
 const withdrawal = acc.movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(withdrawal).toFixed(2)}€`;
+  labelSumOut.textContent = formatCur(Math.abs(withdrawal), acc.locale, acc.currency
+  );
+  // labelSumOut.textContent = `${Math.abs(withdrawal).toFixed(2)}€`;//Previous code
 
 //Display the interest total
 const interest = acc.movements
@@ -174,7 +200,8 @@ const interest = acc.movements
   return int >= 1;
 })
 .reduce((acc, int) => acc + int, 0);
-labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
+// labelSumInterest.textContent = `${interest.toFixed(2)}€`;//Previous code
 }
 
 // calcDisplaySummary(account1.movements);
@@ -334,14 +361,14 @@ btnLoan.addEventListener('click', function (e) {
   //Number(inputLoanAmount.value)
 //Using the .some method: Sets a condition where any of the values are true
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
-    //Add movement
+    setTimeout(function (){    //Add Movement //After 2.5 seconds
     currentAccount.movements.push(amount);
 
     //Add loan date
     currentAccount.movementsDates.push(new Date().toISOString());
 
     //Update UI
-    updateUI(currentAccount)
+    updateUI(currentAccount)}, 2500)
   }
   inputLoanAmount.value = '';
 
