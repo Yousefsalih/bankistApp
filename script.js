@@ -100,7 +100,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const formatMovementDate = function(date) {
+const formatMovementDate = function(date, locale) {
   const calcDaysPassed = (date1, date2) =>
     Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
     const daysPassed = calcDaysPassed(new Date(), date);
@@ -109,13 +109,16 @@ const formatMovementDate = function(date) {
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
-  else {
-  //Adding the dates for the movements
-  const day = `${date.getDate()}`.padStart(2, 0);
-  const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-}}
+  //Previous format for the date
+  // else {
+  // //Adding the dates for the movements
+  // const day = `${date.getDate()}`.padStart(2, 0);
+  // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  // const year = date.getFullYear();
+  // return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date); //Updating it with the internationalization API
+
+}
 //Show the transactions
 const displayMovements = function(acc, sort = false) {
 
@@ -127,7 +130,7 @@ const displayMovements = function(acc, sort = false) {
   movs.forEach(function (mov, i){
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const date = new Date(acc.movementsDates[i]);
-    const displayDate = formatMovementDate(date);
+    const displayDate = formatMovementDate(date, acc.locale);
     const html = `
           <div class="movements__row">
           <div class="movements__type movements__type--${type}">${
@@ -236,17 +239,45 @@ btnLogin.addEventListener('click', function (e) { //Enter button works in the fo
 
     containerApp.style.opacity = 100;
 
-    //Setting the date under the current balance
     const now = new Date();
-    // const day = now.getDate(); Normal
-    const day = `${now.getDate()}`.padStart(2, 0); //Adding a 0 if its a one digit
-    // const month = now.getMonth() + 1; Normal
-    const month = `${now.getMonth() + 1}`.padStart(2, 0); //Adding a 0 if its a one digit month
-    const year = now.getFullYear();
-    const hour = now.getHours();
-    const min = now.getMinutes();
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
-    //day/month/year
+
+    //Adding options to the function below. This is manual.
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'long', //or numeric
+      year: 'numeric', //or 2-digit
+      weekday: 'long',
+    };
+
+    // //Language based on the user's default language for the browser
+    // const locale = navigator.language;
+    // console.log(locale); //en-CA
+
+    // labelDate.textContent = new Intl.DateTimeFormat('en-US').format(now)//Intl is the namespace object for the internationalizing API, for Times and Dates we use DateTimeFormat method that accepts the locale string, which is the language and country. This creates a new formatter and on this we can call .format(), where we pass in the date we want to format, which is now. Refer to ISO Language code table "Lingoes".
+
+    // labelDate.textContent = new Intl.DateTimeFormat('en-US', options).format(now)//Alternative with options for hours, minute, day, month, etc.
+
+    // labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(
+    //   now
+    // ); //Adding the locale language option based on browser
+
+    labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(
+      now
+    ); //Adding the locale language option based on the specific user
+
+    // //Setting the date under the current balance (before the above)
+    // const now = new Date();
+    // // const day = now.getDate(); Normal
+    // const day = `${now.getDate()}`.padStart(2, 0); //Adding a 0 if its a one digit
+    // // const month = now.getMonth() + 1; Normal
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0); //Adding a 0 if its a one digit month
+    // const year = now.getFullYear();
+    // const hour = now.getHours();
+    // const min = now.getMinutes();
+    // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+    // //day/month/year
 
     //Clear Input fields
     inputLoginUsername.value = inputLoginPin.value = '';
@@ -402,3 +433,29 @@ labelBalance.addEventListener('click', function(){
 currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
+
+//Experimenting with Internationalizing API
+const now = new Date();
+
+//Adding options to the function below. This is manual.
+const options = {
+  hour: 'numeric',
+  minute: 'numeric',
+  day: 'numeric',
+  month: 'long', //or numeric
+  year: 'numeric',//or 2-digit
+  weekday: 'long'
+}
+
+//Language based on the user's default language for the browser
+const locale = navigator.language;
+console.log(locale); //en-CA
+
+// labelDate.textContent = new Intl.DateTimeFormat('en-US').format(now)//Intl is the namespace object for the internationalizing API, for Times and Dates we use DateTimeFormat method that accepts the locale string, which is the language and country. This creates a new formatter and on this we can call .format(), where we pass in the date we want to format, which is now. Refer to ISO Language code table "Lingoes".
+
+// labelDate.textContent = new Intl.DateTimeFormat('en-US', options).format(now)//Alternative with options for hours, minute, day, month, etc.
+
+labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now)//Adding the locale language option
+
+
+
