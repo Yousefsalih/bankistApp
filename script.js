@@ -249,8 +249,34 @@ const updateUI = function (acc) {
   // console.log('LOGIN');
 };
 
+//Countdown Timer function
+const startLogOutTimer = function() {
+  const tick = function() {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0)
+    const sec = String(time % 60).padStart(2, 0);
+    //In each call, print the remaining time to UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    //When time is at 0 seconds, stop timer and log out user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started'
+      containerApp.style.opacity = 0;
+    }
+    //Decrease 1s
+  time--;
+  };
+
+  //Set time to 5 minutes
+  let time = 10;
+  tick();
+  //Call the timer every second
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 //Event handler for login
-let currentAccount;
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', function (e) { //Enter button works in the form input as a click too
   e.preventDefault(); //prevent form from submitting because it refreshes the page
@@ -290,9 +316,10 @@ btnLogin.addEventListener('click', function (e) { //Enter button works in the fo
     //   now
     // ); //Adding the locale language option based on browser
 
-    labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(
-      now
-    ); //Adding the locale language option based on the specific user
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now); //Adding the locale language option based on the specific user
 
     // //Setting the date under the current balance (before the above)
     // const now = new Date();
@@ -309,6 +336,10 @@ btnLogin.addEventListener('click', function (e) { //Enter button works in the fo
     //Clear Input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur(); //Loses focus
+
+    //Clear Timer to avoid the timer being applied to two accounts at the same time
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
 
     //Update UI
     updateUI(currentAccount);
@@ -334,9 +365,13 @@ btnTransfer.addEventListener('click', function(e) {
 
       //Add transfer date
       currentAccount.movementsDates.push(new Date().toISOString());
-      receiverAcc.movementsDates.push(new Date().toISOString())
+      receiverAcc.movementsDates.push(new Date().toISOString());
       //Update UI
       updateUI(currentAccount);
+
+      //Reset Timer
+      clearInterval(timer);
+      timer = startLogOutTimer();
     }
 })
 
@@ -356,22 +391,26 @@ btnClose.addEventListener('click', function (e) {
 //Request Loan Function
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Math.floor(inputLoanAmount.value)
+  const amount = Math.floor(inputLoanAmount.value);
   // +(inputLoanAmount.value);
   //Number(inputLoanAmount.value)
-//Using the .some method: Sets a condition where any of the values are true
-  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
-    setTimeout(function (){    //Add Movement //After 2.5 seconds
-    currentAccount.movements.push(amount);
+  //Using the .some method: Sets a condition where any of the values are true
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    setTimeout(function () {
+      //Add Movement //After 2.5 seconds
+      currentAccount.movements.push(amount);
 
-    //Add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      //Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    //Update UI
-    updateUI(currentAccount)}, 2500)
+      //Update UI
+      updateUI(currentAccount);
+    }, 2500);
   }
   inputLoanAmount.value = '';
-
+  //Reset Timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 })
 
 //Testing out the flat method in order for the bank to calculate the total balance of all of the movements (transactions) in the bank
@@ -457,9 +496,9 @@ labelBalance.addEventListener('click', function(){
 });
 
 //FAKE ALWAYS LOGGED IN
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 //Experimenting with Internationalizing API
 const now = new Date();
@@ -483,6 +522,4 @@ console.log(locale); //en-CA
 // labelDate.textContent = new Intl.DateTimeFormat('en-US', options).format(now)//Alternative with options for hours, minute, day, month, etc.
 
 labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now)//Adding the locale language option
-
-
 
